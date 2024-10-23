@@ -22,6 +22,8 @@ import {
   isSameDay,
   addDays,
   parseISO,
+  startOfWeek,
+  endOfWeek,
 } from "date-fns";
 import { es } from "date-fns/locale";
 import Swal from "sweetalert2";
@@ -54,7 +56,14 @@ export default function ProtocolCalendar() {
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  // Ajustamos para mostrar la semana completa incluso si empieza en el mes anterior
+  const calendarStart = startOfWeek(monthStart, { locale: es });
+  const calendarEnd = endOfWeek(monthEnd, { locale: es });
+  const calendarDays = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEnd,
+  });
 
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
@@ -320,12 +329,12 @@ export default function ProtocolCalendar() {
           </div>
         )}
         <div className="grid grid-cols-7 gap-1">
-          {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
+          {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => (
             <div key={day} className="text-center font-medium text-sm py-2">
               {day}
             </div>
           ))}
-          {monthDays.map((day) => (
+          {calendarDays.map((day) => (
             <button
               key={day.toString()}
               onClick={() => setSelectedDate(day)}
